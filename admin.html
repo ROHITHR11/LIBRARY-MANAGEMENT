@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Admin Dashboard</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<h2>Admin Dashboard</h2>
+<nav>
+  <button onclick="showSection('books')">Manage Books</button>
+  <button onclick="showSection('users')">Manage Users</button>
+  <button onclick="showSection('reports')">Reports</button>
+  <button onclick="logout()">Logout</button>
+</nav>
+
+<section id="books" class="section">
+  <h3>Books</h3>
+  <form id="bookForm">
+    <input id="bookId" placeholder="Book ID" required />
+    <input id="bookTitle" placeholder="Book Title" required />
+    <input id="bookAuthor" placeholder="Author Name" required />
+    <button type="submit">Add/Update Book</button>
+  </form>
+  <table id="bookTable"></table>
+</section>
+
+<section id="users" class="section">
+  <h3>Users</h3>
+  <form id="userForm">
+    <input id="userName" placeholder="Username" required />
+    <input id="userPass" placeholder="Password" required />
+    <button type="submit">Add User</button>
+  </form>
+  <table id="userTable"></table>
+</section>
+
+<section id="reports" class="section">
+  <h3>Reports</h3>
+  <button onclick="generateReports()">Show Reports</button>
+  <div id="reportContent"></div>
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>
