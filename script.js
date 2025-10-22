@@ -1,3 +1,4 @@
+// Sample users & books for demo
 let users = JSON.parse(localStorage.getItem('users')) || [
   { username: 'admin', password: 'admin', role: 'admin' },
   { username: 'user1', password: 'user1', role: 'user' },
@@ -42,7 +43,7 @@ function showSection(id) {
   document.getElementById(id).style.display = 'block';
 }
 
-// Admin dashboard scripts
+// -- Admin dashboard code --
 if (window.location.pathname.includes('admin.html')) {
   const bookForm = document.getElementById('bookForm');
   const userForm = document.getElementById('userForm');
@@ -94,21 +95,22 @@ if (window.location.pathname.includes('admin.html')) {
     books.forEach((b, i) => {
       const fine = b.status === 'Issued' && b.issueDate ? calculateFine(b.issueDate) : 0;
       bookTable.innerHTML += `<tr>
-        <td>${b.id}</td>
-        <td>${b.title}</td>
-        <td>${b.author}</td>
-        <td>${b.status}</td>
+        <td>${b.id}</td><td>${b.title}</td><td>${b.author}</td><td>${b.status}</td>
         <td>${b.status === 'Issued' ? b.issuedTo : '-'}</td>
         <td>${fine > 0 ? fine : '-'}</td>
-        <td><button onclick="deleteBook(${i})">Delete</button></td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteBook(${i})">Delete</button></td>
       </tr>`;
     });
   }
 
   function renderUsers() {
-    userTable.innerHTML = '<tr><th>Username</th><th>Role</th></tr>';
-    users.forEach(u => {
-      userTable.innerHTML += `<tr><td>${u.username}</td><td>${u.role}</td></tr>`;
+    userTable.innerHTML = '<tr><th>Username</th><th>Role</th><th>Action</th></tr>';
+    users.forEach((u, i) => {
+      userTable.innerHTML += `<tr>
+        <td>${u.username}</td>
+        <td>${u.role}</td>
+        <td>${u.role !== 'admin' ? `<button class="btn btn-danger btn-sm" onclick="deleteUser(${i})">Remove</button>` : '-'}</td>
+      </tr>`;
     });
   }
 
@@ -120,12 +122,24 @@ if (window.location.pathname.includes('admin.html')) {
     }
   };
 
+  window.deleteUser = function(index) {
+    const user = users[index];
+    if (user.role === 'admin') {
+      alert('Cannot remove admin user!');
+      return;
+    }
+    if (confirm(`Are you sure you want to remove user "${user.username}"?`)) {
+      users.splice(index, 1);
+      saveData();
+      renderUsers();
+    }
+  };
+
   renderBooks();
   renderUsers();
   showSection('books');
 }
 
-// User dashboard scripts
 if (window.location.pathname.includes('user.html')) {
   const table = document.getElementById('userBookTable');
   const currentUser = JSON.parse(sessionStorage.getItem('loggedUser'));
@@ -145,9 +159,9 @@ if (window.location.pathname.includes('user.html')) {
       const fine = b.status === 'Issued' && b.issueDate ? calculateFine(b.issueDate) : 0;
       let action = '';
       if (b.status === 'Available') {
-        action = `<button onclick="issueBook('${b.id}')">Issue</button>`;
+        action = `<button class="btn btn-success btn-sm" onclick="issueBook('${b.id}')">Issue</button>`;
       } else if (b.status === 'Issued' && b.issuedTo === currentUser.username) {
-        action = `<button onclick="returnBook('${b.id}')">Return</button>`;
+        action = `<button class="btn btn-warning btn-sm" onclick="returnBook('${b.id}')">Return</button>`;
       } else {
         action = 'Issued';
       }
@@ -199,7 +213,7 @@ if (window.location.pathname.includes('user.html')) {
 
   renderUserBooks();
 }
-  
+
 function generateReports() {
   const allBooks = books.map(b =>
     `<li>${b.title} by ${b.author} - ${b.status}${b.status === 'Issued' ? ` (Issued to: ${b.issuedTo})` : ''}</li>`
@@ -218,4 +232,3 @@ function generateReports() {
     <h4>Overdue Books</h4><ul>${overdueBooks}</ul>
   `;
 }
-
